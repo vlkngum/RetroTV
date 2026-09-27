@@ -1,0 +1,39 @@
+{
+    "manifest_version": 3,
+    "name": "2000'ler TV Pro",
+    "version": "2.0",
+    "description": "Kanal logolu, anlık aç/kapa yapabildiğin, bozulma efektli 2000'ler TV eklentisi.",
+    "permissions": [
+        "storage"
+    ],
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "kanald.png",
+                "kanald.jpg",
+                "showtv.png",
+                "showtv.jpg",
+                "star.png",
+                "star.jpg",
+                "atv.png",
+                "atv.jpg"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ]
+}

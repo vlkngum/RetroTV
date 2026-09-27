@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>2000'ler TV Pro</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 15px;
+            width: 250px;
+            background: #222;
+            color: #fff;
+            margin: 0;
+        }
+
+        h3 {
+            margin-top: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #FFD700;
+            font-size: 18px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group.slider-group {
+            margin-bottom: 12px;
+            gap: 2px;
+        }
+
+        label.title {
+            font-weight: bold;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .slider-title {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #bbb;
+        }
+
+        .slider-val {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        select,
+        input[type="text"] {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #555;
+            background: #333;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        select:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #555;
+            transition: .4s;
+            border-radius: 22px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #4CAF50;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(22px);
+        }
+
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-direction: row;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #444;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>Tüplü TV</h3>
+
+    <div class="control-group toggle-row">
+        <label class="title" for="powerBtn">TV Aç / Kapat:</label>
+        <label class="switch">
+            <input type="checkbox" id="powerBtn">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="control-group">
+        <label class="title" for="channelSelect">Kanal Logosu Seç:</label>
+        <select id="channelSelect">
+            <option value="none">Yok</option>
+            <option value="kanald">Kanal D</option>
+            <option value="showtv">Show TV</option>
+            <option value="star">Star TV</option>
+            <option value="atv">ATV</option>
+        </select>
+    </div>
+
+    <div class="control-group toggle-row" style="margin-bottom: 12px;">
+        <label class="title" for="ilkKezBtn">"TV'DE İLK KEZ" Yazısı:</label>
+        <label class="switch">
+            <input type="checkbox" id="ilkKezBtn">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="control-group toggle-row" style="margin-bottom: 12px;">
+        <label class="title" for="lowResBtn">Nostalji Modu (240p & 15FPS):</label>
+        <label class="switch">
+            <input type="checkbox" id="lowResBtn" checked>
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="control-group toggle-row" style="margin-bottom: 12px;">
+        <label class="title" for="vhsAudioBtn">VHS Ses Efekti (Hiss):</label>
+        <label class="switch">
+            <input type="checkbox" id="vhsAudioBtn">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="control-group toggle-row" style="margin-bottom: 12px;">
+        <label class="title" for="crtCurveBtn">Büyük Tüplü TV (Bombe):</label>
+        <label class="switch">
+            <input type="checkbox" id="crtCurveBtn">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="control-group">
+        <label class="title" for="bottomText">Sağ Alt İsim / Yazı:</label>
+        <input type="text" id="bottomText" placeholder="Örn: Ayşe / Canlı">
+    </div>
+
+    <hr>
+
+    <!-- EFEKT AYARLARI -->
+    <div class="control-group slider-group">
+        <div class="slider-title"><span>Renk Kayması (Hue)</span> <span class="slider-val" id="hueVal">0°</span></div>
+        <input type="range" id="filterHue" min="0" max="360" step="5" value="0">
+    </div>
+    <div class="control-group slider-group">
+        <div class="slider-title"><span>Siyah-Beyaz</span> <span class="slider-val" id="grayscaleVal">0%</span></div>
+        <input type="range" id="filterGrayscale" min="0" max="100" step="5" value="0">
+    </div>
+    <div class="control-group slider-group">
+        <div class="slider-title"><span>Bulanıklık</span> <span class="slider-val" id="blurVal">2.5px</span></div>
+        <input type="range" id="filterBlur" min="0" max="10" step="0.5" value="2.5">
+    </div>
+    <div class="control-group slider-group">
+        <div class="slider-title"><span>Eskitme (Sepia)</span> <span class="slider-val" id="sepiaVal">60%</span></div>
+        <input type="range" id="filterSepia" min="0" max="100" step="5" value="60">
+    </div>
+    <div class="control-group slider-group">
+        <div class="slider-title"><span>Kontrast</span> <span class="slider-val" id="contrastVal">180%</span></div>
+        <input type="range" id="filterContrast" min="50" max="300" step="10" value="180">
+    </div>
+    <div class="control-group slider-group">
+        <div class="slider-title"><span>Parlaklık</span> <span class="slider-val" id="brightnessVal">75%</span></div>
+        <input type="range" id="filterBrightness" min="20" max="250" step="5" value="75">
+    </div>
+    <div class="control-group slider-group">
+        <div class="slider-title"><span>Doygunluk</span> <span class="slider-val" id="saturateVal">110%</span></div>
+        <input type="range" id="filterSaturate" min="0" max="300" step="10" value="110">
+    </div>
+    <div class="control-group slider-group">
+        <div class="slider-title"><span>Tarama Çizgileri</span> <span class="slider-val" id="scanlineVal">35%</span>
+        </div>
+        <input type="range" id="filterScanline" min="0" max="100" step="5" value="35">
+    </div>
+    <div class="control-group slider-group">
+        <div class="slider-title"><span>Köşe Karartısı</span> <span class="slider-val" id="vignetteVal">120px</span>
+        </div>
+        <input type="range" id="filterVignette" min="0" max="300" step="10" value="120">
+    </div>
+    <div class="control-group slider-group">
+        <div class="slider-title"><span>Çözünürlük (Pikselleşme)</span> <span class="slider-val"
+                id="resolutionVal">240p</span></div>
+        <input type="range" id="filterResolution" min="50" max="480" step="10" value="240">
+    </div>
+    <div class="control-group slider-group">
+        <div class="slider-title"><span>RGB Kayması (Renk Ayrımı)</span> <span class="slider-val"
+                id="rgbShiftVal">0px</span></div>
+        <input type="range" id="filterRgbShift" min="0" max="15" step="1" value="0">
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>
