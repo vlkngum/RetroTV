@@ -42,6 +42,56 @@ style.innerHTML = `
         opacity: 0.85; filter: blur(0.8px); text-transform: uppercase;
         padding: 15px;
     }
+
+    .retro-tv-ad {
+        position: fixed; z-index: 9999999; pointer-events: none;
+        background: rgba(240, 240, 245, 0.98); color: #111;
+        font-family: 'Courier New', monospace; font-weight: bold;
+        text-shadow: 1px 1px 0 rgba(255,255,255,0.8);
+        box-sizing: border-box;
+        opacity: 0; transition: opacity 0.5s;
+        text-align: center;
+        overflow: hidden;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    }
+    .retro-tv-ad.horizontal {
+        display: flex; align-items: center; justify-content: center;
+        font-size: 32px;
+        white-space: nowrap;
+        background: rgba(20, 30, 80, 0.95);
+        color: #fff;
+        text-shadow: 2px 2px 0 #000;
+        border-radius: 0;
+    }
+    .retro-tv-ad.vertical {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        font-size: 24px;
+        white-space: normal;
+        line-height: 1.25;
+        padding: 20px 10px;
+    }
+    .retro-tv-ad.vertical img {
+        margin: 20px 0 !important;
+        border-width: 2px !important;
+        border-style: solid;
+        border-color: #333 !important;
+        border-radius: 6px;
+        max-width: 85%;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+    }
+
+    @keyframes retro-blink {
+        0%, 49% { opacity: 1; }
+        50%, 100% { opacity: 0.2; }
+    }
+    .retro-blink {
+        animation: retro-blink 1s ease-in-out infinite;
+        color: #d32f2f;
+    }
+    .horizontal .retro-blink {
+        color: #ffeb3b;
+    }
 `;
 document.head.appendChild(style);
 
@@ -103,6 +153,39 @@ const bottomTextElement = document.createElement('div');
 bottomTextElement.className = 'retro-tv-bottom-text';
 tvContainer.appendChild(bottomTextElement);
 
+const retroAds = [
+    // --- YATAY REKLAMLAR ---
+    { text: ">> POLİFONİK ZİL SESİ << <span class='retro-blink'>'DELİ' yaz 3333'e gönder!</span>", type: "horizontal", bg: "rgba(20, 30, 80, 0.95)", color: "#FFF" },
+
+    { text: "*** AŞK ÖLÇER *** Sevgilinin ismini ve kendi ismini aralarında boşluk bırakarak <span class='retro-blink'>5555'e GÖNDER!</span>", type: "horizontal", bg: "rgba(100, 10, 10, 0.95)", color: "#FFF" },
+
+    { text: "🌟 GÜNLÜK BURCUN CEBİNDE 🌟 'KOC' yaz 1999'a yolla, <span class='retro-blink'>YILDIZLARIN SANA NE SÖYLEDİĞİNİ ÖĞREN!</span>", type: "horizontal", bg: "rgba(60, 10, 90, 0.95)", color: "#FFD700" },
+
+    { text: "🎮 JAVA OYUNLARI 🎮 Efsanevi 'YILAN 3D' artık cebinde! 'YILAN' yaz 2222'ye gönder, <span class='retro-blink'>ANINDA TELEFONUNA GELSİN!</span>", type: "horizontal", bg: "rgba(0, 100, 0, 0.95)", color: "#00FF00" },
+
+    { text: "🌙 RÜYA TABİRLERİ 🌙 Gördüğün rüyayı kısaca yaz 8888'e yolla, medyumlarımız <span class='retro-blink'>ANINDA YORUMLASIN!</span>", type: "horizontal", bg: "rgba(0, 40, 100, 0.95)", color: "#FFF" },
+
+    { text: ">>> BEDAVA KONTÖR <<< 'KAZAN' yazıp 7777'ye SMS gönderen her 100. kişiye <span class='retro-blink'>TAM 250 KONTÖR HEDİYE!</span>", type: "horizontal", bg: "rgba(255, 140, 0, 0.95)", color: "#111" },
+
+    // --- DİKEY REKLAMLAR ---
+    { text: "<span class='retro-blink'>YAKINDA...</span><br><br>YENİ<br>DİZİ<br><br>'ACI<br>HAYAT'<br><br>SADECE<br>KANAL 6'DA", type: "vertical", bg: "rgba(240, 240, 245, 0.95)", color: "#111" },
+
+    { text: ">>> SOHBET <<< Yalnızlıktan<br>sıkıldın mı?<br><br>Yaz 4444'e<br>yolla,<br><span class='retro-blink'>hemen<br>arkadaş bul!</span>", type: "vertical", bg: "rgba(10, 80, 20, 0.95)", color: "#FFF" },
+
+    { text: "<span class='retro-blink'>RENKLİ<br>LOGO!</span><br><br>Takımının<br>logosu<br>ekranında!<br><br>'CIMBOM'<br>yaz 1905'e<br>yolla!", type: "vertical", bg: "rgba(250, 210, 0, 0.95)", color: "#800000" },
+
+    { text: "<span class='retro-blink'>31 KUPON<br>BİRİKTİR!</span><img src='https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2c/C._1990_Renault_5_Campus_Prima_%2811932402805%29.jpg/960px-C._1990_Renault_5_Campus_Prima_%2811932402805%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20150314055454'>HAYALİNDEKİ<br>ARABAYI<br>KAZAN!", type: "vertical", bg: "rgba(240, 245, 250, 0.95)", color: "#112" },
+
+    { text: "<span class='retro-blink'>3 KAPAK<br>GETİRENE!</span><img src='https://thumb.wikimedia.org/wikipedia/commons/thumb/4/45/Toshiba_washing_machine_2024-12-22.jpg/960px-Toshiba_washing_machine_2024-12-22.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail'>MAKİNE<br>ANINDA<br>SENİN<br>OLSUN!", type: "vertical", bg: "rgba(245, 240, 230, 0.95)", color: "#211" },
+
+    { text: "ŞOK<br>FIRSAT<img src='https://thumb.wikimedia.org/wikipedia/commons/thumb/1/18/Nokia_3310_phone.jpg/960px-Nokia_3310_phone.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail'><span class='retro-blink'>0900 900<br>HEMEN<br>ARAYIN</span>", type: "vertical", bg: "rgba(230, 245, 230, 0.95)", color: "#121" }
+];
+
+const adContainer = document.createElement('div');
+adContainer.className = 'retro-tv-ad';
+adContainer.style.display = 'none';
+tvContainer.appendChild(adContainer);
+
 // nternetten Google API ile sitelerin yüksek çözünürlüklü logolarn (faviconlarn) çeken yap
 const channelHTML = {
     'none': '',
@@ -117,7 +200,7 @@ let currentFilters = {
     hue: 0, grayscale: 0, blur: 2.5, sepia: 60,
     contrast: 180, brightness: 75, saturate: 110,
     scanline: 35, vignette: 120, resolution: 240,
-    rgbShift: 0, vhsAudio: false, aspect43: false
+    rgbShift: 0, vhsAudio: false, aspect43: false, retroAds: true
 };
 let isLowResOn = false;
 
@@ -145,6 +228,7 @@ function applySettings(state) {
     if (state.fRgbShift !== undefined) currentFilters.rgbShift = state.fRgbShift;
     if (state.vhsAudioOn !== undefined) currentFilters.vhsAudio = state.vhsAudioOn;
     if (state.aspect43On !== undefined) currentFilters.aspect43 = state.aspect43On;
+    if (state.retroAdsOn !== undefined) currentFilters.retroAds = state.retroAdsOn;
 
     // Filtreleri CSS'e dinamik olarak yedir
     let backdropStr = "hue-rotate(" + currentFilters.hue + "deg) grayscale(" + currentFilters.grayscale + "%) blur(" + currentFilters.blur + "px) sepia(" + currentFilters.sepia + "%) contrast(" + currentFilters.contrast + "%) brightness(" + currentFilters.brightness + "%) saturate(" + currentFilters.saturate + "%)";
@@ -166,6 +250,7 @@ function applySettings(state) {
 
     updateTVLayout();
     if (typeof updateAudioState === 'function') updateAudioState(state);
+    if (typeof handleAdEngine === 'function') handleAdEngine(state);
 
     // Orijinal video sesini de boz/düzenle
     const videoElem = document.querySelector('video');
@@ -178,6 +263,10 @@ function applySettings(state) {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'updateTV') {
         applySettings(request.state);
+    } else if (request.action === 'triggerRandomAd') {
+        if (tvContainer.style.visibility !== 'hidden' && typeof showRandomAd === 'function') {
+            showRandomAd();
+        }
     }
 });
 
@@ -193,6 +282,7 @@ chrome.storage.local.get([
         lowResOn: (data.lowResOn !== undefined) ? data.lowResOn : true,
         vhsAudioOn: data.vhsAudioOn || false,
         aspect43On: data.aspect43On || false,
+        retroAdsOn: data.retroAdsOn !== undefined ? data.retroAdsOn : true,
         bottomText: data.bottomText || '',
         fHue: data.fHue || 0,
         fGrayscale: data.fGrayscale || 0,
@@ -273,6 +363,33 @@ function updateTVLayout() {
         bottomTextElement.style.bottom = (window.innerHeight - rect.bottom + 35) + 'px';
         bottomTextElement.style.left = 'auto';
         bottomTextElement.style.right = (window.innerWidth - targetRight + 35) + 'px';
+
+        // Reklam Konumlandırma
+        if (adContainer.style.display === 'block') {
+            if (adContainer.dataset.type === 'horizontal') {
+                adContainer.style.width = targetWidth + 'px';
+                adContainer.style.height = '62px';
+                adContainer.style.left = targetLeft + 'px';
+                adContainer.style.bottom = (window.innerHeight - rect.bottom + 50) + 'px';
+                adContainer.style.top = 'auto';
+                adContainer.style.transform = 'none';
+                adContainer.style.borderTop = '4px solid ' + adContainer.style.color;
+                adContainer.style.borderBottom = '4px solid ' + adContainer.style.color;
+                adContainer.style.borderLeft = 'none';
+                adContainer.style.borderRight = 'none';
+            } else if (adContainer.dataset.type === 'vertical') {
+                adContainer.style.width = '180px';
+                adContainer.style.height = 'auto';
+                adContainer.style.left = targetLeft + 'px';
+                adContainer.style.top = (rect.top + (rect.height / 2)) + 'px';
+                adContainer.style.transform = 'translateY(-50%)';
+                adContainer.style.bottom = 'auto';
+                adContainer.style.borderRight = '4px solid ' + adContainer.style.color;
+                adContainer.style.borderTop = 'none';
+                adContainer.style.borderBottom = 'none';
+                adContainer.style.borderLeft = 'none';
+            }
+        }
     } else {
         // Sayfada video yoksa tüm efekti tamamen gizle (tüm ekran kaplamasn)
         tvContainer.style.visibility = 'hidden';
@@ -421,9 +538,79 @@ function applyVideoAudioDegradation(video, state) {
             videoHighpassFilter.frequency.setTargetAtTime(0, videoAudioCtx.currentTime, 0.5);
         }
 
+
     } catch (e) {
         // Cross-Origin (CORS) veya hook sırasında oluşan güvenlik hataları.
         // Eklenti sayfada çalıştığı için YouTube'da vs normalde izin verir.
         console.warn("Tüplü TV: Orijinal video sesine müdahale başarısız oldu:", e);
+    }
+}
+
+// --- Nostaljik Reklam Motoru ---
+let adInterval = null;
+let currentAdTimeout = null;
+let lastAdBlockId = -1;
+
+function showRandomAd() {
+    if (adContainer.style.display === 'block') return;
+
+    // GLOBAL SYNC: Saatin her 5 dakikalık dilimi sabit bir slot belirler.
+    // Örn: XX:10 ile XX:14 arası slot 2'dir. Bu sayede tüm cihazlar aynı dilimde array'in 2. öğesini (sıra 2) baz alır.
+    const now = new Date();
+    const minuteSlot = Math.floor(now.getMinutes() / 5);
+    const adIndex = minuteSlot % retroAds.length;
+    const ad = retroAds[adIndex];
+
+    adContainer.style.backgroundColor = ad.bg;
+    adContainer.style.color = ad.color;
+
+    if (ad.type === 'horizontal') {
+        // Efsane kayan yazi (marquee)
+        adContainer.innerHTML = '<marquee scrollamount="15" style="width:100%; letter-spacing: 2px;">' + ad.text + '</marquee>';
+        adContainer.className = 'retro-tv-ad horizontal';
+    } else {
+        adContainer.innerHTML = ad.text;
+        adContainer.className = 'retro-tv-ad vertical';
+    }
+
+    adContainer.dataset.type = ad.type;
+    adContainer.style.display = 'block';
+
+    // Smooth fade in
+    setTimeout(() => { adContainer.style.opacity = '1'; }, 50);
+
+    // Hide after ~12 seconds
+    currentAdTimeout = setTimeout(() => {
+        adContainer.style.opacity = '0';
+        setTimeout(() => { adContainer.style.display = 'none'; }, 500);
+    }, 12000);
+}
+
+function handleAdEngine(state) {
+    if (state.tvOn && state.retroAdsOn) {
+        if (!adInterval) {
+            // Saniyede bir zamanı kontrol eder
+            adInterval = setInterval(() => {
+                const now = new Date();
+                // O anki gün, saat ve 5 dakikalık dakikayı benzersiz bir ID yapar
+                const currentBlockId = now.getHours() * 12 + Math.floor(now.getMinutes() / 5);
+
+                if (currentBlockId !== lastAdBlockId) {
+                    lastAdBlockId = currentBlockId;
+                    if (tvContainer.style.visibility !== 'hidden') {
+                        showRandomAd();
+                    }
+                }
+            }, 1000);
+        }
+    } else {
+        if (adInterval) {
+            clearInterval(adInterval);
+            adInterval = null;
+        }
+        adContainer.style.opacity = '0';
+        adContainer.style.display = 'none';
+        if (currentAdTimeout) clearTimeout(currentAdTimeout);
+        lastAdBlockId = -1; // Reset to force trigger when toggled back on
     }
 }

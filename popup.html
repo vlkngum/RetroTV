@@ -135,6 +135,22 @@
             border-top: 1px solid #444;
             margin: 15px 0;
         }
+
+        .trigger-ad-btn {
+            background: #555;
+            color: #fff;
+            border: 1px solid #777;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        .trigger-ad-btn:hover {
+            background: #666;
+        }
     </style>
 </head>
 
@@ -190,6 +206,19 @@
             <input type="checkbox" id="aspect43Btn">
             <span class="slider"></span>
         </label>
+    </div>
+
+    <div class="control-group toggle-row" style="margin-bottom: 12px;">
+        <label class="title" for="retroAdsBtn">Nostaljik TV Reklamları:</label>
+        <label class="switch">
+            <input type="checkbox" id="retroAdsBtn" checked>
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div style="text-align:center; margin-bottom:15px; margin-top:-5px;">
+        <button id="triggerAdBtn" class="trigger-ad-btn">📺 Hemen Bir Bant
+            Göster!</button>
     </div>
 
     <div class="control-group">

@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const lowResBtn = document.getElementById('lowResBtn');
     const vhsAudioBtn = document.getElementById('vhsAudioBtn');
     const aspect43Btn = document.getElementById('aspect43Btn');
+    const retroAdsBtn = document.getElementById('retroAdsBtn');
     const bottomText = document.getElementById('bottomText');
 
     // Sliders
@@ -22,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load State
     chrome.storage.local.get([
-        'tvOn', 'channelLogo', 'ilkKezOn', 'lowResOn', 'vhsAudioOn', 'aspect43On', 'bottomText',
+        'tvOn', 'channelLogo', 'ilkKezOn', 'lowResOn', 'vhsAudioOn', 'aspect43On', 'retroAdsOn', 'bottomText',
         'fHue', 'fGrayscale', 'fBlur', 'fSepia', 'fContrast', 'fBrightness', 'fSaturate', 'fScanline', 'fVignette', 'fResolution', 'fRgbShift'
     ], (data) => {
         powerBtn.checked = data.tvOn || false;
@@ -31,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         lowResBtn.checked = data.lowResOn !== undefined ? data.lowResOn : true;
         vhsAudioBtn.checked = data.vhsAudioOn || false;
         aspect43Btn.checked = data.aspect43On || false;
+        retroAdsBtn.checked = data.retroAdsOn !== undefined ? data.retroAdsOn : true;
         bottomText.value = data.bottomText || '';
 
         // UI Updates with defaults
@@ -72,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lowResOn: lowResBtn.checked,
             vhsAudioOn: vhsAudioBtn.checked,
             aspect43On: aspect43Btn.checked,
+            retroAdsOn: retroAdsBtn.checked,
             bottomText: bottomText.value,
 
             fHue: filterHue.value,
@@ -104,7 +107,16 @@ document.addEventListener('DOMContentLoaded', () => {
     lowResBtn.addEventListener('change', broadcastState);
     vhsAudioBtn.addEventListener('change', broadcastState);
     aspect43Btn.addEventListener('change', broadcastState);
+    retroAdsBtn.addEventListener('change', broadcastState);
     bottomText.addEventListener('input', broadcastState);
+
+    document.getElementById('triggerAdBtn').addEventListener('click', () => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            if (tabs[0] && tabs[0].id) {
+                chrome.tabs.sendMessage(tabs[0].id, { action: 'triggerRandomAd' }).catch(() => { });
+            }
+        });
+    });
 
     // Sliders
     [
