@@ -67,6 +67,15 @@ const tvContainer = document.createElement('div');
 tvContainer.className = 'retro-tv-container';
 document.body.appendChild(tvContainer);
 
+// 4:3 Ekran Pillarbox (Siyah Barlar)
+const tvPillarLeft = document.createElement('div');
+tvPillarLeft.style.cssText = "position:fixed; background:#000; z-index:9999998; pointer-events:none; display:none;";
+tvContainer.appendChild(tvPillarLeft);
+
+const tvPillarRight = document.createElement('div');
+tvPillarRight.style.cssText = "position:fixed; background:#000; z-index:9999998; pointer-events:none; display:none;";
+tvContainer.appendChild(tvPillarRight);
+
 // 240p / 15FPS Simülasyonu için Canvas (Videonun hemen üstünde, efektlerin altnda)
 const retroCanvas = document.createElement('canvas');
 retroCanvas.className = 'retro-tv-canvas';
@@ -97,10 +106,10 @@ tvContainer.appendChild(bottomTextElement);
 // nternetten Google API ile sitelerin yüksek çözünürlüklü logolarn (faviconlarn) çeken yap
 const channelHTML = {
     'none': '',
-    'kanald': '<img src="https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.kanald.com.tr&size=128" style="width:150px; height:auto; opacity:0.9; filter: grayscale(30%) sepia(30%) contrast(110%); border-radius: 12px;" alt="Kanal D">',
-    'showtv': '<img src="https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.showtv.com.tr&size=128" style="width:150px; height:auto; opacity:0.9; filter: grayscale(30%) sepia(30%) contrast(110%); border-radius: 12px;" alt="Show TV">',
-    'star': '<img src="https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.startv.com.tr&size=128" style="width:150px; height:auto; opacity:0.9; filter: grayscale(30%) sepia(30%) contrast(110%); border-radius: 12px;" alt="Star TV">',
-    'atv': '<img src="https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.atv.com.tr&size=128" style="width:150px; height:auto; opacity:0.9; filter: grayscale(30%) sepia(30%) contrast(110%); border-radius: 12px;" alt="ATV">'
+    'kanald': '<img src="https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.kanald.com.tr&size=48" style="width:120px; height:auto; opacity:0.9; filter: grayscale(30%) sepia(30%) contrast(110%); border-radius: 4px; image-rendering: pixelated;" alt="Kanal D">',
+    'showtv': '<img src="https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.showtv.com.tr&size=48" style="width:120px; height:auto; opacity:0.9; filter: grayscale(30%) sepia(30%) contrast(110%); border-radius: 4px; image-rendering: pixelated;" alt="Show TV">',
+    'star': '<img src="https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.startv.com.tr&size=48" style="width:120px; height:auto; opacity:0.9; filter: grayscale(30%) sepia(30%) contrast(110%); border-radius: 4px; image-rendering: pixelated;" alt="Star TV">',
+    'atv': '<img src="https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.atv.com.tr&size=48" style="width:120px; height:auto; opacity:0.9; filter: grayscale(30%) sepia(30%) contrast(110%); border-radius: 4px; image-rendering: pixelated;" alt="ATV">'
 };
 
 // Varsaylan Filtre Ayarlar
@@ -108,7 +117,7 @@ let currentFilters = {
     hue: 0, grayscale: 0, blur: 2.5, sepia: 60,
     contrast: 180, brightness: 75, saturate: 110,
     scanline: 35, vignette: 120, resolution: 240,
-    rgbShift: 0, vhsAudio: false, crtCurve: false
+    rgbShift: 0, vhsAudio: false, aspect43: false
 };
 let isLowResOn = false;
 
@@ -135,7 +144,7 @@ function applySettings(state) {
     if (state.fResolution !== undefined) currentFilters.resolution = state.fResolution;
     if (state.fRgbShift !== undefined) currentFilters.rgbShift = state.fRgbShift;
     if (state.vhsAudioOn !== undefined) currentFilters.vhsAudio = state.vhsAudioOn;
-    if (state.crtCurveOn !== undefined) currentFilters.crtCurve = state.crtCurveOn;
+    if (state.aspect43On !== undefined) currentFilters.aspect43 = state.aspect43On;
 
     // Filtreleri CSS'e dinamik olarak yedir
     let backdropStr = "hue-rotate(" + currentFilters.hue + "deg) grayscale(" + currentFilters.grayscale + "%) blur(" + currentFilters.blur + "px) sepia(" + currentFilters.sepia + "%) contrast(" + currentFilters.contrast + "%) brightness(" + currentFilters.brightness + "%) saturate(" + currentFilters.saturate + "%)";
@@ -151,19 +160,18 @@ function applySettings(state) {
     const scanlineOpacity = currentFilters.scanline / 100;
     tvOverlay.style.backgroundImage = "linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, " + scanlineOpacity + ") 50%), linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.04))";
 
-    // CRT Bombe efekti
-    if (currentFilters.crtCurve) {
-        tvOverlay.style.borderRadius = "50% / 10%";
-        retroCanvas.style.borderRadius = "50% / 10%";
-        tvOverlay.style.boxShadow = "inset 0 0 " + currentFilters.vignette + "px rgba(0,0,0,0.95), 0 0 30px rgba(0,0,0,0.8)";
-    } else {
-        tvOverlay.style.borderRadius = "0";
-        retroCanvas.style.borderRadius = "0";
-        tvOverlay.style.boxShadow = "inset 0 0 " + currentFilters.vignette + "px rgba(0,0,0,0.95)";
-    }
+    tvOverlay.style.borderRadius = "0";
+    retroCanvas.style.borderRadius = "0";
+    tvOverlay.style.boxShadow = "inset 0 0 " + currentFilters.vignette + "px rgba(0,0,0,0.95)";
 
     updateTVLayout();
     if (typeof updateAudioState === 'function') updateAudioState(state);
+
+    // Orijinal video sesini de boz/düzenle
+    const videoElem = document.querySelector('video');
+    if (videoElem && typeof applyVideoAudioDegradation === 'function') {
+        applyVideoAudioDegradation(videoElem, state);
+    }
 }
 
 // Mesaj Dinleyici (Popup'tan gelen emirler)
@@ -175,7 +183,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 // Sayfa ilk açldnda kaytl ayarlar çek
 chrome.storage.local.get([
-    'tvOn', 'channelLogo', 'ilkKezOn', 'lowResOn', 'vhsAudioOn', 'crtCurveOn', 'bottomText',
+    'tvOn', 'channelLogo', 'ilkKezOn', 'lowResOn', 'vhsAudioOn', 'aspect43On', 'bottomText',
     'fHue', 'fGrayscale', 'fBlur', 'fSepia', 'fContrast', 'fBrightness', 'fSaturate', 'fScanline', 'fVignette', 'fResolution', 'fRgbShift'
 ], (data) => {
     applySettings({
@@ -184,7 +192,7 @@ chrome.storage.local.get([
         ilkKezOn: (data.ilkKezOn !== undefined) ? data.ilkKezOn : true,
         lowResOn: (data.lowResOn !== undefined) ? data.lowResOn : true,
         vhsAudioOn: data.vhsAudioOn || false,
-        crtCurveOn: data.crtCurveOn || false,
+        aspect43On: data.aspect43On || false,
         bottomText: data.bottomText || '',
         fHue: data.fHue || 0,
         fGrayscale: data.fGrayscale || 0,
@@ -208,35 +216,63 @@ function updateTVLayout() {
     if (video) {
         const rect = video.getBoundingClientRect();
 
-        // Overlay (Efektleri sadece videonun üstüne sabitle)
+        // 4:3 Aspect Ratio Hesaplama
+        let targetWidth = rect.width;
+        let targetLeft = rect.left;
+        let targetRight = rect.right;
+
+        // Eğer 4:3 seçili ve video geniş ekran formatındaysa (16:9 vs.)
+        const isWide = (rect.width / rect.height) > 1.35;
+        if (currentFilters.aspect43 && isWide) {
+            targetWidth = rect.height * (4 / 3);
+            targetLeft = rect.left + (rect.width - targetWidth) / 2;
+            targetRight = targetLeft + targetWidth;
+
+            tvPillarLeft.style.display = 'block';
+            tvPillarLeft.style.top = rect.top + 'px';
+            tvPillarLeft.style.left = rect.left + 'px';
+            tvPillarLeft.style.width = (rect.width - targetWidth) / 2 + 'px';
+            tvPillarLeft.style.height = rect.height + 'px';
+
+            tvPillarRight.style.display = 'block';
+            tvPillarRight.style.top = rect.top + 'px';
+            tvPillarRight.style.left = targetRight + 'px';
+            tvPillarRight.style.width = (rect.width - targetWidth) / 2 + 'px';
+            tvPillarRight.style.height = rect.height + 'px';
+        } else {
+            tvPillarLeft.style.display = 'none';
+            tvPillarRight.style.display = 'none';
+        }
+
+        // Overlay (Efektleri sadece videonun (veya sınırlandırılmış 4:3 alanın) üstüne sabitle)
         tvOverlay.style.position = 'fixed';
         tvOverlay.style.top = rect.top + 'px';
-        tvOverlay.style.left = rect.left + 'px';
-        tvOverlay.style.width = rect.width + 'px';
+        tvOverlay.style.left = targetLeft + 'px';
+        tvOverlay.style.width = targetWidth + 'px';
         tvOverlay.style.height = rect.height + 'px';
 
-        // Canvas Boyutlandrma (Efektlerle tam ayn pozisyon, ancak düük çözünürlüklü)
+        // Canvas Boyutlandırma (Efektlerle tam aynı pozisyon)
         retroCanvas.style.top = rect.top + 'px';
-        retroCanvas.style.left = rect.left + 'px';
-        retroCanvas.style.width = rect.width + 'px';
+        retroCanvas.style.left = targetLeft + 'px';
+        retroCanvas.style.width = targetWidth + 'px';
         retroCanvas.style.height = rect.height + 'px';
 
-        // Kanal Logosu (Videonun sol üstü)
+        // Kanal Logosu (Görünen alanın sol üstü)
         channelLogoElement.style.top = (rect.top + 30) + 'px';
-        channelLogoElement.style.left = (rect.left + 35) + 'px';
+        channelLogoElement.style.left = (targetLeft + 35) + 'px';
 
-        // LK KEZ Logosu (Videonun sa üstü)
+        // İLK KEZ Logosu (Görünen alanın sağ üstü)
         ilkKezLogo.style.top = (rect.top + 30) + 'px';
         ilkKezLogo.style.left = 'auto';
-        ilkKezLogo.style.right = (window.innerWidth - rect.right + 35) + 'px';
+        ilkKezLogo.style.right = (window.innerWidth - targetRight + 35) + 'px';
 
         // Video varsa tüm efektleri görünür yap
         tvContainer.style.visibility = 'visible';
 
-        // Sa Alt Özel Yaz
+        // Sağ Alt Özel Yazı
         bottomTextElement.style.bottom = (window.innerHeight - rect.bottom + 35) + 'px';
         bottomTextElement.style.left = 'auto';
-        bottomTextElement.style.right = (window.innerWidth - rect.right + 35) + 'px';
+        bottomTextElement.style.right = (window.innerWidth - targetRight + 35) + 'px';
     } else {
         // Sayfada video yoksa tüm efekti tamamen gizle (tüm ekran kaplamasn)
         tvContainer.style.visibility = 'hidden';
@@ -331,5 +367,63 @@ function updateAudioState(state) {
             audioCtx.resume();
         }
         if (noiseGain && audioCtx) noiseGain.gain.setTargetAtTime(0.001, audioCtx.currentTime, 0.5);
+    }
+}
+
+// --- Orijinal Videonun Ses Kalitesini Düşürme (Video Audio API Hook) ---
+let videoAudioCtx = null;
+let videoSourceNode = null;
+let videoLowpassFilter = null;
+let videoHighpassFilter = null;
+let isVideoHooked = false;
+
+function applyVideoAudioDegradation(video, state) {
+    if (!video) return;
+
+    try {
+        if (!videoAudioCtx) {
+            videoAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        if (videoAudioCtx.state === 'suspended') {
+            videoAudioCtx.resume();
+        }
+
+        // Medya elementinden bir kere source alınabilir, yoksa InvalidStateError atar
+        if (!isVideoHooked) {
+            // Video elemanının sesini Web Audio ortamına çekiyoruz
+            videoSourceNode = videoAudioCtx.createMediaElementSource(video);
+
+            // Tizleri (yüksek frekansları) kesecek filtre (kalitesiz duyulmasını sağlar)
+            videoLowpassFilter = videoAudioCtx.createBiquadFilter();
+            videoLowpassFilter.type = 'lowpass';
+            videoLowpassFilter.frequency.value = 20000;
+
+            // Basları kesecek filtre (sesi tenekemsi yapar)
+            videoHighpassFilter = videoAudioCtx.createBiquadFilter();
+            videoHighpassFilter.type = 'highpass';
+            videoHighpassFilter.frequency.value = 0;
+
+            videoSourceNode.connect(videoLowpassFilter);
+            videoLowpassFilter.connect(videoHighpassFilter);
+            videoHighpassFilter.connect(videoAudioCtx.destination);
+
+            isVideoHooked = true;
+        }
+
+        if (state.tvOn && state.vhsAudioOn) {
+            // Nostalji açık: Videonun kendi sesini eski tüplü tv / kaset seviyesine çekiyoruz.
+            videoLowpassFilter.frequency.setTargetAtTime(1000, videoAudioCtx.currentTime, 0.5); // Boğuk
+            videoHighpassFilter.frequency.setTargetAtTime(300, videoAudioCtx.currentTime, 0.5); // Tenekemsi
+        } else {
+            // Normal kalite (efekti kapat)
+            videoLowpassFilter.frequency.setTargetAtTime(20000, videoAudioCtx.currentTime, 0.5);
+            videoHighpassFilter.frequency.setTargetAtTime(0, videoAudioCtx.currentTime, 0.5);
+        }
+
+    } catch (e) {
+        // Cross-Origin (CORS) veya hook sırasında oluşan güvenlik hataları.
+        // Eklenti sayfada çalıştığı için YouTube'da vs normalde izin verir.
+        console.warn("Tüplü TV: Orijinal video sesine müdahale başarısız oldu:", e);
     }
 }

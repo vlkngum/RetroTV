@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ilkKezBtn = document.getElementById('ilkKezBtn');
     const lowResBtn = document.getElementById('lowResBtn');
     const vhsAudioBtn = document.getElementById('vhsAudioBtn');
-    const crtCurveBtn = document.getElementById('crtCurveBtn');
+    const aspect43Btn = document.getElementById('aspect43Btn');
     const bottomText = document.getElementById('bottomText');
 
     // Sliders
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load State
     chrome.storage.local.get([
-        'tvOn', 'channelLogo', 'ilkKezOn', 'lowResOn', 'vhsAudioOn', 'crtCurveOn', 'bottomText',
+        'tvOn', 'channelLogo', 'ilkKezOn', 'lowResOn', 'vhsAudioOn', 'aspect43On', 'bottomText',
         'fHue', 'fGrayscale', 'fBlur', 'fSepia', 'fContrast', 'fBrightness', 'fSaturate', 'fScanline', 'fVignette', 'fResolution', 'fRgbShift'
     ], (data) => {
         powerBtn.checked = data.tvOn || false;
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ilkKezBtn.checked = data.ilkKezOn !== undefined ? data.ilkKezOn : true;
         lowResBtn.checked = data.lowResOn !== undefined ? data.lowResOn : true;
         vhsAudioBtn.checked = data.vhsAudioOn || false;
-        crtCurveBtn.checked = data.crtCurveOn || false;
+        aspect43Btn.checked = data.aspect43On || false;
         bottomText.value = data.bottomText || '';
 
         // UI Updates with defaults
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ilkKezOn: ilkKezBtn.checked,
             lowResOn: lowResBtn.checked,
             vhsAudioOn: vhsAudioBtn.checked,
-            crtCurveOn: crtCurveBtn.checked,
+            aspect43On: aspect43Btn.checked,
             bottomText: bottomText.value,
 
             fHue: filterHue.value,
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ilkKezBtn.addEventListener('change', broadcastState);
     lowResBtn.addEventListener('change', broadcastState);
     vhsAudioBtn.addEventListener('change', broadcastState);
-    crtCurveBtn.addEventListener('change', broadcastState);
+    aspect43Btn.addEventListener('change', broadcastState);
     bottomText.addEventListener('input', broadcastState);
 
     // Sliders
