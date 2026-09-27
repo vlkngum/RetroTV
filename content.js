@@ -167,12 +167,12 @@ const retroAds = [
 
     { text: ">>> BEDAVA KONTÖR <<< 'KAZAN' yazıp 7777'ye SMS gönderen her 100. kişiye <span class='retro-blink'>TAM 250 KONTÖR HEDİYE!</span>", type: "horizontal", bg: "rgba(255, 140, 0, 0.95)", color: "#111" },
 
-    // --- DİKEY REKLAMLAR ---
-    { text: "<span class='retro-blink'>YAKINDA...</span><br><br>YENİ<br>DİZİ<br><br>'ACI<br>HAYAT'<br><br>SADECE<br>KANAL 6'DA", type: "vertical", bg: "rgba(240, 240, 245, 0.95)", color: "#111" },
+    // --- DİKEY REKLAMLAR (HEPSİ WİKİMEDİA RESİMLİ) ---
+    { text: "<span class='retro-blink'>YAKINDA...</span><img src='https://commons.wikimedia.org/wiki/Special:FilePath/CRT_television.jpg?width=400'>YENİ<br>DİZİ<br><br>'ACI<br>HAYAT'", type: "vertical", bg: "rgba(240, 240, 245, 0.95)", color: "#111" },
 
-    { text: ">>> SOHBET <<< Yalnızlıktan<br>sıkıldın mı?<br><br>Yaz 4444'e<br>yolla,<br><span class='retro-blink'>hemen<br>arkadaş bul!</span>", type: "vertical", bg: "rgba(10, 80, 20, 0.95)", color: "#FFF" },
+    { text: ">>> SOHBET <<< Yalnızlıktan<br>sıkıldın mı?<img src='https://commons.wikimedia.org/wiki/Special:FilePath/Nokia_1110_DG_01.jpg?width=400'>Yaz 4444'e<br>yolla,<br><span class='retro-blink'>arkadaş bul!</span>", type: "vertical", bg: "rgba(10, 80, 20, 0.95)", color: "#FFF" },
 
-    { text: "<span class='retro-blink'>RENKLİ<br>LOGO!</span><br><br>Takımının<br>logosu<br>ekranında!<br><br>'CIMBOM'<br>yaz 1905'e<br>yolla!", type: "vertical", bg: "rgba(250, 210, 0, 0.95)", color: "#800000" },
+    { text: "<span class='retro-blink'>RENKLİ<br>LOGO!</span><img src='https://commons.wikimedia.org/wiki/Special:FilePath/Nokia_5310_front.jpg?width=400'>Takımının<br>logosu<br>ekranında!<br><br>'CIMBOM'<br>yaz 1905'e yolla!", type: "vertical", bg: "rgba(250, 210, 0, 0.95)", color: "#800000" },
 
     { text: "<span class='retro-blink'>31 KUPON<br>BİRİKTİR!</span><img src='https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2c/C._1990_Renault_5_Campus_Prima_%2811932402805%29.jpg/960px-C._1990_Renault_5_Campus_Prima_%2811932402805%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20150314055454'>HAYALİNDEKİ<br>ARABAYI<br>KAZAN!", type: "vertical", bg: "rgba(240, 245, 250, 0.95)", color: "#112" },
 
@@ -265,7 +265,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         applySettings(request.state);
     } else if (request.action === 'triggerRandomAd') {
         if (tvContainer.style.visibility !== 'hidden' && typeof showRandomAd === 'function') {
-            showRandomAd();
+            showRandomAd(true); // isManual = true; manuel tetiklemede rastgele seç
         }
     }
 });
@@ -551,14 +551,20 @@ let adInterval = null;
 let currentAdTimeout = null;
 let lastAdBlockId = -1;
 
-function showRandomAd() {
+function showRandomAd(isManual = false) {
     if (adContainer.style.display === 'block') return;
 
-    // GLOBAL SYNC: Saatin her 5 dakikalık dilimi sabit bir slot belirler.
-    // Örn: XX:10 ile XX:14 arası slot 2'dir. Bu sayede tüm cihazlar aynı dilimde array'in 2. öğesini (sıra 2) baz alır.
-    const now = new Date();
-    const minuteSlot = Math.floor(now.getMinutes() / 5);
-    const adIndex = minuteSlot % retroAds.length;
+    let adIndex;
+    if (isManual) {
+        // Eğer popup'tan "Hemen Reklam Göster" tıklanmışsa, sistem rastgele bir reklam çeker
+        adIndex = Math.floor(Math.random() * retroAds.length);
+    } else {
+        // GLOBAL SYNC: Saatin her 5 dakikalık dilimi sabit bir slot belirler.
+        // Örn: XX:10 ile XX:14 arası slot 2'dir. Bu sayede tüm cihazlar aynı dilimde array'in 2. öğesini (sıra 2) baz alır.
+        const now = new Date();
+        const minuteSlot = Math.floor(now.getMinutes() / 5);
+        adIndex = minuteSlot % retroAds.length;
+    }
     const ad = retroAds[adIndex];
 
     adContainer.style.backgroundColor = ad.bg;
